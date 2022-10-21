@@ -68,15 +68,33 @@ class Order:
 class OrderItem:
 
     # TODO: need to represent item state, not just ordered
+
     def __init__(self, menu_item):
         self.details = menu_item
-        self.__ordered = False
+
+        """
+        0: not ordered
+        1: marked as ordered
+        2: marked as cooking
+        3: ....  
+        """
+        # TODO ABOVE
+
+        self.__ordered = 0
+
+
+
+
 
     def mark_as_ordered(self):
-        self.__ordered = True
+        self.__ordered = 1
+
+    def mark_as_cooking(self, item):
+        self.__ordered = 2
 
     def has_been_ordered(self):
         return self.__ordered
+
 
     def has_been_served(self):
         # TODO: correct implementation based on item state
