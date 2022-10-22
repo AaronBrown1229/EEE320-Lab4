@@ -149,7 +149,7 @@ class KitchenView(RestaurantView):
                         if item.has_been_ordered() and not item.has_been_served():
                             # TODO: compute button text based on current state of order
                             # Need to make button text update when status changes between cooking, cooked...
-                            button_text = 'Start Cooking'
+                            button_text = self.controller.button_text(item)
 
                             def handler(_, order_item=item):
                                 # TODO: call appropriate method on handler

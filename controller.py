@@ -62,6 +62,7 @@ class OrderController(Controller):
         self.order.remove_item(item)
         self.restaurant.notify_views()
 
+
 class KitchenController(Controller):
 
     def create_ui(self):
@@ -73,3 +74,17 @@ class KitchenController(Controller):
         item.mark_as_cooking(item)
         # TODO Maybe notify_views()????
         self.view.update()
+
+    def button_text(self, item):
+        state = item.ordered_state()
+
+        # uses the codes defined in OrderItem
+        if state == 1:
+            return "Start Cooking"
+        elif state == 2:
+            return "Mark as ready"
+        elif state == 3:
+            return "Mark as served"
+        else:
+            print("requesting button_text after item has been served")
+            return "Served"

@@ -76,15 +76,10 @@ class OrderItem:
         0: not ordered
         1: marked as ordered
         2: marked as cooking
-        3: ....  
+        3: marked as ready
+        4: marked as served
         """
-        # TODO ABOVE
-
         self.__ordered = 0
-
-
-
-
 
     def mark_as_ordered(self):
         self.__ordered = 1
@@ -93,17 +88,24 @@ class OrderItem:
         self.__ordered = 2
 
     def has_been_ordered(self):
-        return self.__ordered
-
+        # if the state is 1 or more it has been ordered
+        return self.__ordered >= 1
 
     def has_been_served(self):
         # TODO: correct implementation based on item state
-        return False
+        # TODONE
+        # if on step 4 the item has been served
+        return self.__ordered == 4
 
     def can_be_cancelled(self):
         # TODO: correct implementation based on item state
-        return True
+        # TODONE
+        # if on a step less than cooking the item can be cancelled
+        return self.__ordered < 2
 
+    # used to print the correct text on the buttons in Kitchen view
+    def ordered_state(self):
+        return self.__ordered
 
 class MenuItem:
 
