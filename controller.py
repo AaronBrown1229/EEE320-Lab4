@@ -70,9 +70,8 @@ class KitchenController(Controller):
 
     # TODO: implement a method to handle button presses on the KitchenView
 
-    def start_cooking(self, item):
-        item.mark_as_cooking(item)
-        # TODO Maybe notify_views()????
+    def progress_state(self, item):
+        item.next_state(item)
         self.view.update()
 
     def button_text(self, item):

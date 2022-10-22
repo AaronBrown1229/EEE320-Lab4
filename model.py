@@ -84,8 +84,8 @@ class OrderItem:
     def mark_as_ordered(self):
         self.__ordered = 1
 
-    def mark_as_cooking(self, item):
-        self.__ordered = 2
+    def next_state(self, item):
+        self.__ordered += 1
 
     def has_been_ordered(self):
         # if the state is 1 or more it has been ordered

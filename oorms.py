@@ -121,6 +121,7 @@ class ServerView(RestaurantView):
 
                 def handler(_, cancelled_item=item):
                     # TODO: call appropriate method on controller to remove item from order
+                    # TODONE
                     self.controller.cancel_item(item)
 
                     pass
@@ -148,12 +149,13 @@ class KitchenView(RestaurantView):
                     for item in order.items:
                         if item.has_been_ordered() and not item.has_been_served():
                             # TODO: compute button text based on current state of order
-                            # Need to make button text update when status changes between cooking, cooked...
+                            # TODONE
                             button_text = self.controller.button_text(item)
 
                             def handler(_, order_item=item):
                                 # TODO: call appropriate method on handler
-                                self.controller.start_cooking(item)
+                                # TODONE
+                                self.controller.progress_state(item)
 
 
                             self._make_button(button_text, handler,
