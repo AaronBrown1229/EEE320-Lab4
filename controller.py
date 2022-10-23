@@ -85,5 +85,4 @@ class KitchenController(Controller):
         elif state == 3:
             return "Mark as served"
         else:
-            print("requesting button_text after item has been served")
             return "Served"
