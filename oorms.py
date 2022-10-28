@@ -155,7 +155,7 @@ class KitchenView(RestaurantView):
                             def handler(_, order_item=item):
                                 # TODO: call appropriate method on handler
                                 # TODONE
-                                self.controller.progress_state(item)
+                                self.controller.progress_state(order_item)
 
 
                             self._make_button(button_text, handler,
