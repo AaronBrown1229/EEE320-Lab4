@@ -123,6 +123,8 @@ class ServerView(RestaurantView):
                     # TODO: call appropriate method on controller to remove item from order
                     # TODONE
                     self.controller.cancel_item(item)
+                    self.restaurant.notify_views()
+
 
                     pass
 
@@ -156,6 +158,8 @@ class KitchenView(RestaurantView):
                                 # TODO: call appropriate method on handler
                                 # TODONE
                                 self.controller.progress_state(item)
+
+
 
 
                             self._make_button(button_text, handler,
