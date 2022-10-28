@@ -156,7 +156,7 @@ class KitchenView(RestaurantView):
                                 # TODO: call appropriate method on handler
                                 # TODONE
                                 self.controller.progress_state(order_item)
-
+                                self.restaurant.notify_views()
 
                             self._make_button(button_text, handler,
                                               location=(K_LEFT, line * K_LINE_HEIGHT),
