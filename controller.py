@@ -78,8 +78,6 @@ class KitchenController(Controller):
         state = item.ordered_state()
 
         # uses the codes defined in OrderItem
-        # can do it with only one if
-
         if state == 1:
             return "Start Cooking"
         elif state == 2:
