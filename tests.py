@@ -45,6 +45,9 @@ class ServerViewMock:
     def create_order_ui(self, order):
         self.last_UI_created = (UI.ORDER, order)
 
+    def create_kitchen_order_ui(self):
+        pass
+
 
 class OORMSTestCase(unittest.TestCase):
 
@@ -199,10 +202,10 @@ class OORMSTestCase(unittest.TestCase):
 
         # changes one items state then attemps to cancel
         controller_holder = self.view.controller
-        self.view.set_controller(KitchenController(self, self.restaurant))
+        self.view.set_controller(KitchenController(self.view, self.restaurant))
         self.assertIsInstance(self.view.controller, KitchenController)
         #This one line is causing errors and IDK why
-        #self.view.controller.progress_state(the_order.items[-1])
+        self.view.controller.progress_state(the_order.items[-1])
         self.view.set_controller(controller_holder)
         self.assertIsInstance(self.view.controller, OrderController)
         self.view.controller.cancel_item(the_order.items[-1])
