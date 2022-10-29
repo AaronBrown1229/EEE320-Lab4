@@ -151,3 +151,36 @@ class OORMSTestCase(unittest.TestCase):
         check_first_three_items(self.restaurant.menu_items, the_order.items)
         self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
         self.assertEqual(self.restaurant.menu_items[2], the_order.items[4].details)
+
+    # used to test if the x button works correctly
+    def test_press_x_button(self):
+        # set up copied from test_order_controller_update_several_then_cancel
+        self.view.controller.table_touched(6)
+        self.view.controller.seat_touched(7)
+        the_order = self.restaurant.tables[6].order_for(7)
+        self.view.controller.add_item(self.restaurant.menu_items[0])
+        self.view.controller.add_item(self.restaurant.menu_items[3])
+        self.view.controller.add_item(self.restaurant.menu_items[5])
+        self.view.controller.update_order()
+
+        def check_first_three_items(menu_items, items):
+            self.assertEqual(menu_items[0], items[0].details)
+            self.assertEqual(menu_items[3], items[1].details)
+            self.assertEqual(menu_items[5], items[2].details)
+
+        self.assertEqual(3, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
+
+        def add_two_more(menu_items, view):
+            view.controller.seat_touched(7)
+            view.controller.add_item(menu_items[1])
+            view.controller.add_item(menu_items[2])
+
+        # adds two items then removes the items
+        add_two_more(self.restaurant.menu_items, self.view)
+        self.view.controller.cancel_item(the_order.items[-1])
+        self.view.controller.cancel_item(the_order.items[-1])
+
+        # checks if successful
+        self.assertEqual(3, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
