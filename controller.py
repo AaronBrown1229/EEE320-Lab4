@@ -59,8 +59,9 @@ class OrderController(Controller):
         self.restaurant.notify_views()
 
     def cancel_item(self, item):
-        self.order.remove_item(item)
-        self.restaurant.notify_views()
+        if item.can_be_cancelled():
+            self.order.remove_item(item)
+            self.restaurant.notify_views()
 
 
 class KitchenController(Controller):
