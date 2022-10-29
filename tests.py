@@ -1,7 +1,7 @@
 import unittest
 from enum import Enum, auto
 
-from controller import RestaurantController, TableController, OrderController
+from controller import RestaurantController, TableController, OrderController, KitchenController
 from model import Restaurant, OrderItem
 
 
@@ -172,11 +172,11 @@ class OORMSTestCase(unittest.TestCase):
         check_first_three_items(self.restaurant.menu_items, the_order.items)
 
         def add_two_more(menu_items, view):
-            view.controller.seat_touched(7)
             view.controller.add_item(menu_items[1])
             view.controller.add_item(menu_items[2])
 
         # adds two items then removes the items
+        self.view.controller.seat_touched(7)
         add_two_more(self.restaurant.menu_items, self.view)
         self.view.controller.cancel_item(the_order.items[-1])
         self.view.controller.cancel_item(the_order.items[-1])
@@ -184,3 +184,20 @@ class OORMSTestCase(unittest.TestCase):
         # checks if successful
         self.assertEqual(3, len(the_order.items))
         check_first_three_items(self.restaurant.menu_items, the_order.items)
+
+        # adds two items then cancels one after order has been placed
+        add_two_more(self.restaurant.menu_items, self.view)
+        self.view.controller.update_order()
+        self.view.controller.seat_touched(7)
+        self.view.controller.cancel_item(the_order.items[-1])
+
+        # checks if successful
+        self.assertEqual(4, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
+        self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
+
+
+        # # creates two changes one state then attemps to deleate
+        # add_two_more(self.restaurant.menu_items, self.view)
+        # self.view.set_controller(KitchenController(self, self.restaurant))
+        # self.view.controller.progress_state(the_order.itemes[-1])
