@@ -1,7 +1,7 @@
 import unittest
 from enum import Enum, auto
 
-from controller import RestaurantController, TableController, OrderController
+from controller import RestaurantController, TableController, OrderController, KitchenController
 from model import Restaurant, OrderItem
 
 
@@ -44,6 +44,9 @@ class ServerViewMock:
 
     def create_order_ui(self, order):
         self.last_UI_created = (UI.ORDER, order)
+
+    def create_kitchen_order_ui(self):
+        pass
 
 
 class OORMSTestCase(unittest.TestCase):
@@ -151,3 +154,63 @@ class OORMSTestCase(unittest.TestCase):
         check_first_three_items(self.restaurant.menu_items, the_order.items)
         self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
         self.assertEqual(self.restaurant.menu_items[2], the_order.items[4].details)
+
+    # used to test if the x button works correctly
+    def test_press_x_button(self):
+        # set up copied from test_order_controller_update_several_then_cancel
+        self.view.controller.table_touched(6)
+        self.view.controller.seat_touched(7)
+        the_order = self.restaurant.tables[6].order_for(7)
+        self.view.controller.add_item(self.restaurant.menu_items[0])
+        self.view.controller.add_item(self.restaurant.menu_items[3])
+        self.view.controller.add_item(self.restaurant.menu_items[5])
+        self.view.controller.update_order()
+
+        def check_first_three_items(menu_items, items):
+            self.assertEqual(menu_items[0], items[0].details)
+            self.assertEqual(menu_items[3], items[1].details)
+            self.assertEqual(menu_items[5], items[2].details)
+
+        self.assertEqual(3, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
+
+        def add_two_more(menu_items, view):
+            view.controller.add_item(menu_items[1])
+            view.controller.add_item(menu_items[2])
+
+        # adds two items then removes the items
+        self.view.controller.seat_touched(7)
+        add_two_more(self.restaurant.menu_items, self.view)
+        self.view.controller.cancel_item(the_order.items[-1])
+        self.view.controller.cancel_item(the_order.items[-1])
+
+        # checks if successful
+        self.assertEqual(3, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
+
+        # adds two items then cancels one after order has been placed
+        add_two_more(self.restaurant.menu_items, self.view)
+        self.view.controller.update_order()
+        self.view.controller.seat_touched(7)
+        self.view.controller.cancel_item(the_order.items[-1])
+
+        # checks if successful
+        self.assertEqual(4, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
+        self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
+
+
+        # changes one items state then attemps to cancel
+        controller_holder = self.view.controller
+        self.view.set_controller(KitchenController(self.view, self.restaurant))
+        self.assertIsInstance(self.view.controller, KitchenController)
+        #This one line is causing errors and IDK why
+        self.view.controller.progress_state(the_order.items[-1])
+        self.view.set_controller(controller_holder)
+        self.assertIsInstance(self.view.controller, OrderController)
+        self.view.controller.cancel_item(the_order.items[-1])
+
+        #checks if successful
+        self.assertEqual(4, len(the_order.items))
+        check_first_three_items(self.restaurant.menu_items, the_order.items)
+        self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
