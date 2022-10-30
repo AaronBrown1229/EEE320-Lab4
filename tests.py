@@ -217,16 +217,23 @@ class OORMSTestCase(unittest.TestCase):
 
     def test_change_state(self):
 
+        """
+             STATES
+        state 1: "Start Cooking"
+        state 2: "Mark as ready"
+        state 3: "Mark as served"
+        else: "Served"
+        """
+
         R = RestaurantController(self.view, self.restaurant)
         K = KitchenController(self.view, self.restaurant)
-        # O = OrderController(self.view, self.restaurant, , 1)
+
 
         # Changes the current controller to what's being passed
         def controller_changer(change_to):
             self.view.set_controller(change_to)
 
-
-        #  probably using table controller, switch to kitchen controller
+        # switch to kitchen controller
         controller_changer(K)
 
         #  conf the switch was successful
@@ -235,44 +242,93 @@ class OORMSTestCase(unittest.TestCase):
         controller_changer(R)
         self.assertIsInstance(self.view.controller, RestaurantController)
 
+        #   add one dish to the order
         the_order_list = self.view.controller.table_touched(2)
         the_order_list = self.view.controller.seat_touched(1)
-
         the_order_list = self.view.controller.add_item(1)
-        the_order_list = self.view.controller.add_item(8)
 
+        #   order the item
         self.view.controller.update_order()
-
         the_order_list = self.view.restaurant.tables[2].order_for(1)
-
-
         controller_changer(K)
-        ###
 
 
-        #  call same comd as in oorms (self.controller.progress_state(order_item)) progstate inc the state by 1
-        for i in the_order_list.items:
-            self.view.controller.progress_state(i)
+    # CASE 1: can we order and cook one item?
+        # loop through the order stages and ensure one item can be successfully ordered
+
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list.items[0]))
+
+        #  call same comd as in oorms (self.controller.progress_state(order_item))
+        #  progstate inc the state by 1, 5 times to complete the order (not ordered -> mark as served)
+        for i in range(4):
+            for item in the_order_list.items:
+                # if item.has_been_ordered() and not item.has_been_served():
+                self.view.controller.progress_state(item)
+
+
+        self.assertEqual("Served", self.view.controller.button_text(the_order_list.items[0]))
+
+        # remove the item from the list
+        del the_order_list.items[:]
+
+        # make sure it's now an empty list
+        self.assertEqual(0, len(the_order_list.items))
 
 
 
+    # CASE 2: can we order two and cook the newest one ordered?
+        controller_changer(R)
 
+        # make a new order
+        the_order_list_2 = self.view.controller.table_touched(1)
+        the_order_list_2 = self.view.controller.seat_touched(2)
 
+        # add two itens to the order
+        the_order_list_2 = self.view.controller.add_item(2)
+        the_order_list_2 = self.view.controller.add_item(3)
 
+        # order the item
+        self.view.controller.update_order()
+        the_order_list_2 = self.view.restaurant.tables[1].order_for(2)
+        controller_changer(K)
 
+        # ensure they were all orderd
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list_2.items[0]))
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list_2.items[1]))
 
+        # 2. loop through and cook +serve the newest one
+        for i in range(4):
+            self.view.controller.progress_state(the_order_list_2.items[1])
 
+        # 3. check to make sure the only item still in the order list is the first one put into it
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list_2.items[0]))
+        self.assertEqual("Served", self.view.controller.button_text(the_order_list_2.items[1]))
 
+    # CASE 3: can we order two and coook the oldest one ordered?
+        controller_changer(R)
 
+        # make a new order
+        the_order_list_3 = self.view.controller.table_touched(3)
+        the_order_list_3 = self.view.controller.seat_touched(1)
 
+        # add two itens to the order
+        the_order_list_3 = self.view.controller.add_item(4)
+        the_order_list_3 = self.view.controller.add_item(5)
 
+        # order the item
+        self.view.controller.update_order()
+        the_order_list_3 = self.view.restaurant.tables[3].order_for(1)
+        controller_changer(K)
 
-   # case 1: can we order and cook one item
-        # self.controller_changer(KitchenController, RestaurantController)
+        # ensure they were all orderd
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list_3.items[0]))
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list_3.items[1]))
 
+        # 2. loop through and cook +serve the oldest one
+        for i in range(4):
+            self.view.controller.progress_state(the_order_list_3.items[0])
 
-        # case 2: can we order two and cook the newest
+        # 3. check to make sure the only item still in the order list is the last one put into it
+        self.assertEqual("Served", self.view.controller.button_text(the_order_list_3.items[0]))
+        self.assertEqual("Start Cooking", self.view.controller.button_text(the_order_list_3.items[1]))
 
-        # case 3: can we order two and coook the oldest
-
-        # case 4:
