@@ -214,3 +214,65 @@ class OORMSTestCase(unittest.TestCase):
         self.assertEqual(4, len(the_order.items))
         check_first_three_items(self.restaurant.menu_items, the_order.items)
         self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
+
+    def test_change_state(self):
+
+        R = RestaurantController(self.view, self.restaurant)
+        K = KitchenController(self.view, self.restaurant)
+        # O = OrderController(self.view, self.restaurant, , 1)
+
+        # Changes the current controller to what's being passed
+        def controller_changer(change_to):
+            self.view.set_controller(change_to)
+
+
+        #  probably using table controller, switch to kitchen controller
+        controller_changer(K)
+
+        #  conf the switch was successful
+        self.assertIsInstance(self.view.controller, KitchenController)
+
+        controller_changer(R)
+        self.assertIsInstance(self.view.controller, RestaurantController)
+
+        the_order_list = self.view.controller.table_touched(2)
+        the_order_list = self.view.controller.seat_touched(1)
+
+        the_order_list = self.view.controller.add_item(1)
+        the_order_list = self.view.controller.add_item(8)
+
+        self.view.controller.update_order()
+
+        the_order_list = self.view.restaurant.tables[2].order_for(1)
+
+
+        controller_changer(K)
+        ###
+
+
+        #  call same comd as in oorms (self.controller.progress_state(order_item)) progstate inc the state by 1
+        for i in the_order_list.items:
+            self.view.controller.progress_state(i)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   # case 1: can we order and cook one item
+        # self.controller_changer(KitchenController, RestaurantController)
+
+
+        # case 2: can we order two and cook the newest
+
+        # case 3: can we order two and coook the oldest
+
+        # case 4:
